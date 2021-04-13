@@ -1,0 +1,219 @@
+:mod:`snowmobile.core.qa`
+=========================
+
+.. py:module:: snowmobile.core.qa
+
+.. autoapi-nested-parse::
+
+   Derived :class:`~snowmobile.core.statement.Statement` classes.
+
+   These objects derive from :class:`snowmobile.core.statement.Statement`
+   and override its :meth:`~snowmobile.core.statement.Statement.process()`
+   method to perform additional post-processing of the statement's results
+   in conjunction with any parameters provided within the statement's
+   :ref:`tags <tag>`.
+
+   ``s.process()`` modifies a statement's
+   :attr:`~snowmobile.core.statement.Statement.outcome` attribute
+   (:class:`bool`) on which an assertion is run before continuing execution
+   of the script.
+
+   .. note::
+       The ``on_exception`` and ``on_failure`` parameters of
+       :meth:`script.run() <snowmobile.core.script.Script.run()>` are passed
+       directly and only applicable to these derived statement classes.
+
+           ``on_exception`` is used to control the exception-handling **of errors
+           encountered in the post-processing invoked by**
+           :meth:`s.process() <snowmobile.core.statement.Statement.process()>`
+
+           ``on_failure`` is used to control the exception-handling **of a failed
+           assertion ran on the outcome of the post-processing invoked by**
+           :meth:`s.process() <snowmobile.core.statement.Statement.process()>`
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   snowmobile.core.qa.QA
+   snowmobile.core.qa.Empty
+   snowmobile.core.qa.Diff
+
+
+
+.. class:: QA(sn: snowmobile.core.Snowmobile, **kwargs)
+
+
+   Bases: :class:`snowmobile.core.Statement`
+
+   Base class for QA statements.
+
+   .. attribute:: MSG
+      :annotation: = object-specific exception message goes here.
+
+      
+
+   .. method:: set_outcome(self)
+
+      Updates ._outcome upon completion of processing invoked by .process().
+
+
+
+
+.. class:: Empty(sn: snowmobile.core.Snowmobile, **kwargs)
+
+
+   Bases: :class:`snowmobile.core.qa.QA`
+
+   QA class for verification that a statement's results are empty.
+
+   The most widely applicable use of :class:`Empty` is for simple verification
+   that a table's dimensions are as expected.
+
+   .. attribute:: MSG
+      :annotation: = a 'qa-empty' check did not pass its validation; this means that a query you expected to return empty results returned a non-zero number of records.
+
+      
+
+   .. method:: process(self) -> snowmobile.core.qa.QA
+
+      Over-ride method; checks if results are empty and updates outcome
+
+
+
+.. class:: Diff(sn: snowmobile.core.Snowmobile = None, **kwargs)
+
+
+   Bases: :class:`snowmobile.core.qa.QA`
+
+   QA class for comparison of values within a table based on
+   partitioning on a field.
+
+   .. attribute:: partition_on
+
+      Column name to partition data on before comparing the
+      partitioned datasets; defaults to 'src_description`.
+
+      :type: str
+
+   .. attribute:: end_index_at
+
+      Column name that marks the last column to use as an index column
+      when joining the partitioned datasets back together.
+
+      :type: str
+
+   .. attribute:: compare_patterns
+
+      Regex patterns to match columns on that should be *included* in
+      comparison (numeric columns you're running QA on).
+
+      :type: list
+
+   .. attribute:: ignore_patterns
+
+      Regex patterns to match columns on that should be *ignored* both
+      for the comparison and the index.
+
+      :type: list
+
+   .. attribute:: generic_metric_col_nm
+
+      Column name to use for the melted field names; defaults to 'Metric'.
+
+      :type: str
+
+   .. attribute:: compare_cols
+
+      Columns that are used in comparison once statement is executed
+      and parsing is applied.
+
+      :type: list
+
+   .. attribute:: drop_cols
+
+      Columns that are dropped once statement is executed and parsing
+      is applied.
+
+      :type: list
+
+   .. attribute:: idx_cols
+
+      Columns that are used for the index to join the data back
+      together once statement is executed and parsing is applied.
+
+      :type: list
+
+   .. attribute:: ub_raw
+
+      Maximum absolute raw difference (upper bound) that two fields
+      that are being compared can differ from each other without
+      causing a failure.
+
+      :type: float
+
+   .. attribute:: ub_perc
+
+      Maximum absolute percentage difference (upper bound) that two
+      comparison fields can differ from each other without causing a
+      failure.
+
+      :type: float
+
+   .. attribute:: MSG
+      :annotation: = a 'qa-diff' check did not pass its validation; this means that the difference in the values compared did not fall within the specified threshold.
+
+      
+
+   .. method:: split_cols(self) -> snowmobile.core.qa.Diff
+
+      Post-processes results returned from a ``qa-diff`` statement.
+
+      Executes private methods to split columns into:
+          * Index columns
+          * Drop columns
+          * Comparison columns
+
+      Then runs checks needed to ensure minimum requirements are met in order
+      for a valid partition/comparison to be made.
+
+
+   .. method:: partitioned_by(self) -> Set[Any]
+      :property:
+
+      Distinct values within the ``partition_on`` column that data is
+      partitioned by.
+
+
+   .. method:: partitions_are_equal(partitions: Dict[(str, pd.DataFrame)], abs_tol: float, rel_tol: float) -> bool
+      :staticmethod:
+
+      Evaluates if a dictionary of DataFrames are identical.
+
+      :param partitions: A dictionary of DataFrames returned by
+                         :meth:`snowmobile.DataFrame`.
+      :type partitions: Dict[str, pd.DataFrame]
+      :param abs_tol: Absolute tolerance for difference in any value amongst the
+                      DataFrames being compared.
+      :type abs_tol: float
+      :param rel_tol: Relative tolerance for difference in any value amongst the
+                      DataFrames being compared.
+      :type rel_tol: float
+
+      Returns (bool):
+          Indication of equality amongst all the DataFrames contained in
+          ``partitions``.
+
+
+   .. method:: process(self) -> snowmobile.core.qa.Diff
+
+      Post-processing for :class:`Diff`-specific results.
+
+
+

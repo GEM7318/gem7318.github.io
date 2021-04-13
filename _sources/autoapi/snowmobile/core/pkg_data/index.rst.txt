@@ -1,0 +1,6 @@
+:mod:`snowmobile.core.pkg_data`
+===============================
+
+.. py:module:: snowmobile.core.pkg_data
+
+

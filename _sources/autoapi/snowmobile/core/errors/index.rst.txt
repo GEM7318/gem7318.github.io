@@ -1,0 +1,224 @@
+:mod:`snowmobile.core.errors`
+=============================
+
+.. py:module:: snowmobile.core.errors
+
+.. autoapi-nested-parse::
+
+   snowmobile exception classes.
+
+
+
+Module Contents
+---------------
+
+.. exception:: Error(msg: Optional[str] = None, errno: Optional[int] = None, nm: Optional[str] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`Exception`
+
+   Base Generic exception class.
+
+   :param msg: Error message.
+   :type msg: Optional[str]
+   :param errno: Error number.
+   :type errno: Optional[int]
+   :param nm: Globally unique name for an exception being raised; used for
+              InternalExceptions and statement names when QA failures occur.
+   :type nm: Optional[str]
+   :param to_raise: Indicates that the exception should be raised before exiting the
+                    current context.
+   :type to_raise: Optional[bool]
+
+   .. attribute:: tmstmp
+
+      Unix instantiation timestamp of the exception (in seconds).
+
+      :type: int
+
+   .. attribute:: raised
+
+      Indicator of whether or not the instance has already been raised;
+      used for exception chaining from Statement -> Script.
+
+      :type: bool
+
+   .. method:: escalate(self)
+
+      Raises error.
+
+
+   .. method:: format_error_args(prefix: Optional[str] = None, sep: Optional[str] = None, lines: Optional[int] = None, _filter: bool = True, **kwargs: Dict[(str, str)]) -> str
+      :staticmethod:
+
+      Formats a dictionary of arguments into an aligned/indented error msg.
+
+      Placed below primary msg such that a primary msg of 'This is a __ error.'
+      combined with the returned value from this method provided with
+      kwargs={'argument-description1': 'argument-value', 'arg2-desc': 'arg2-value'}
+      would produce the following error message:
+
+          ```
+          This is a ClassName error.
+              argument-description: argument-value
+                         arg2-desc: arg2-value
+          ```
+
+      :param prefix: Character to prefix bullets with; defaults to ' '.
+      :type prefix: str
+      :param sep: Character to separate arguments/values with; defaults to ':'.
+      :type sep: str
+      :param lines: Number of lines to include between arguments; defaults to 1.
+      :type lines: int
+      :param _filter: Indicator of whether to filter out key/value pairs that contain
+                      empty values; defaults to `True`.
+      :type _filter: bool
+      :param \*\*kwargs: Argument keys and values to be converted into a list.
+
+      Returns (str):
+          Formatted arguments as a string.
+
+
+
+.. exception:: InternalError(msg: Optional[str] = None, errno: Optional[int] = None, nm: Optional[str] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.Error`
+
+   Exceptions raised from an internal state that should not exist.
+
+   Debugging/testing Exceptions only.
+
+
+.. exception:: StatementInternalError(msg: Optional[str] = None, errno: Optional[int] = None, nm: Optional[str] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.InternalError`
+
+   Statement-specific internal errors.
+
+
+.. exception:: StatementPostProcessingError(msg: Optional[str] = None, errno: Optional[int] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.Error`
+
+   Exceptions encountered in post-processing invoked by `s.process()`.
+
+   Indicates a non-database error occurred in ``.process()`` method of a
+   derived :class:`~snowmobile.core.statement.Statement` class.
+
+
+.. exception:: QAFailure(nm: str, msg: str, idx: int, desc: Optional[str] = None, errno: Optional[int] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.Error`
+
+   Boolean eval of a statement's `outcome` attribute is *False*.
+
+   Indicates the logic invoked by the ``.process()`` method
+   completed successfully and has set the ``outcome`` attribute
+   to False.
+
+   :param nm: Name name of QA statement.
+   :type nm: str
+   :param desc: Object-specific exception message to display.
+   :type desc: str
+   :param idx: Index of the statement that failed its QA check.
+   :type idx: int
+
+
+.. exception:: QAEmptyFailure(nm: str, msg: str, idx: int, desc: Optional[str] = None, errno: Optional[int] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.QAFailure`
+
+   :class:`~snowmobile.core.qa.Empty` specific failure.
+
+
+.. exception:: QADiffFailure(nm: str, msg: str, idx: int, desc: Optional[str] = None, errno: Optional[int] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.QAFailure`
+
+   :class:`~snowmobile.core.qa.Diff` specific failure.
+
+
+.. exception:: SnowFrameInternalError(msg: Optional[str] = None, errno: Optional[int] = None, nm: Optional[str] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.InternalError`
+
+   class:`~snowmobile.core.snowframe.SnowFrame` specific internal error.
+
+
+.. exception:: StatementNotFoundError(nm: str, statements: List[str] = None, msg: Optional[str] = None, errno: Optional[int] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.Error`
+
+   Invalid statement name or index has been provided.
+
+
+.. exception:: DuplicateTagError(nm: str, msg: Optional[str] = None, errno: Optional[int] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.Error`
+
+   Duplicate statement name specified within a script.
+
+   Is only raised if a duplicate statement name exists **and** a method is
+   invoked that tries to access statement(s) by their name as opposed to index
+   position.
+
+
+.. exception:: LoadingInternalError(msg: Optional[str] = None, errno: Optional[int] = None, nm: Optional[str] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.InternalError`
+
+   Exception boundaries for :class:`~snowmobile.core.table.Table`.
+
+
+.. exception:: ExistingTableError(msg: Optional[str] = None, errno: Optional[int] = None, nm: Optional[str] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.Error`
+
+   Table exists and `if_exists=Fail`
+
+
+.. exception:: ColumnMismatchError(msg: Optional[str] = None, errno: Optional[int] = None, nm: Optional[str] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.Error`
+
+   Columns do not match and `if_exists!='replace'`
+
+
+.. exception:: FileFormatNameError(nm: str, statements: List[str] = None, msg: Optional[str] = None, errno: Optional[int] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.StatementNotFoundError`
+
+   The name of the provided file format is invalid.
+
+
+.. exception:: InvalidTagsError(msg: Optional[str] = None, errno: Optional[int] = None, nm: Optional[str] = None, to_raise: Optional[bool] = False)
+
+
+   Bases: :class:`snowmobile.core.errors.Error`
+
+   Error to be raised when a given statement tag is not valid.
+
+
+.. data:: db_errors
+   
+
+   
+
+.. data:: snowmobile_errors
+   
+
+   
+

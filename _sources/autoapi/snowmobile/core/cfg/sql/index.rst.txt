@@ -1,0 +1,74 @@
+:mod:`snowmobile.core.cfg.sql`
+==============================
+
+.. py:module:: snowmobile.core.cfg.sql
+
+.. autoapi-nested-parse::
+
+   [sql] (**snowmobile-ext.toml**)
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   snowmobile.core.cfg.sql.SQL
+
+
+
+.. class:: SQL
+
+   Bases: :class:`snowmobile.core.cfg.base.Base`
+
+   [sql] (**snowmobile-ext.toml**)
+
+   .. attribute:: generic_anchors
+      :annotation: :Dict
+
+      
+
+   .. attribute:: kw_exceptions
+      :annotation: :Dict
+
+      
+
+   .. attribute:: named_objects
+      :annotation: :List
+
+      
+
+   .. attribute:: info_schema_exceptions
+      :annotation: :Dict[str, str]
+
+      
+
+   .. attribute:: desc_is_simple
+      :annotation: :bool
+
+      
+
+   .. attribute:: pr_over_ge
+      :annotation: :bool
+
+      
+
+   .. method:: info_schema_loc(self, obj: str) -> str
+
+      Returns information schema table for object if other than making plural.
+
+      i.e.:
+          *   'table' --> 'tables'
+          *   'schema' --> 'schemata'
+
+
+   .. method:: objects_within(self, first_line: str)
+
+      Searches the first line of sql for matches to named objects.
+
+
+

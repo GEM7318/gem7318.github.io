@@ -1,0 +1,142 @@
+:mod:`snowmobile.core.cfg.loading`
+==================================
+
+.. py:module:: snowmobile.core.cfg.loading
+
+.. autoapi-nested-parse::
+
+   [loading] section from **snowmobile.toml**, including subsections.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   snowmobile.core.cfg.loading.Put
+   snowmobile.core.cfg.loading.Copy
+   snowmobile.core.cfg.loading.Loading
+
+
+
+.. class:: Put
+
+   Bases: :class:`snowmobile.core.cfg.base.Base`
+
+   [loading.put]
+
+   .. attribute:: auto_compress
+      :annotation: :bool
+
+      
+
+
+.. class:: Copy
+
+   Bases: :class:`snowmobile.core.cfg.base.Base`
+
+   [loading.copy]
+
+   .. attribute:: on_error
+      :annotation: :str
+
+      
+
+
+.. class:: Loading
+
+   Bases: :class:`snowmobile.core.cfg.base.Base`
+
+   [loading]
+
+   Default settings to use when loading data
+
+   .. attribute:: default-file-format
+
+      Name of file-format to use when loading data into the warehouse;
+      default is ``snowmobile_default_csv``;
+      which will be created and
+      dropped afterwards if an existing file format is not specified;
+
+      :type: str
+
+   .. attribute:: include_index
+
+      Include the index of a DataFrame when loading it into a table;
+      default is ``False``.
+
+      :type: bool
+
+   .. attribute:: on_error
+
+      Action to take if an error is encountered when loading data into
+      the warehouse; default is ``continue``.
+
+      :type: bool
+
+   .. attribute:: keep_local
+
+      Option to keep the local file exported when loading into a
+      staging table; default is ``False``.
+
+      :type: bool
+
+   .. attribute:: include_loaded_tmstmp
+
+      Include a **loaded_tmstmp** column when loading a DataFrame into
+      the warehouse; default is ``True``.
+
+      :type: bool
+
+   .. attribute:: quote_char
+
+      Quote character to use for delimited files; default is double
+      quotes (``"``).
+
+      :type: str
+
+   .. attribute:: auto_compress
+
+      Auto-compress file when loading data; default is ``True``..
+
+      :type: bool
+
+   .. attribute:: overwrite_pre_existing_stage
+
+      Overwrite pre-existing staging table if data is being appended
+      into an existing table/the staging table already exists; default is
+      ``True``.
+
+      :type: bool
+
+   .. attribute:: defaults
+      :annotation: :Dict
+
+      
+
+   .. attribute:: put
+      :annotation: :Put
+
+      
+
+   .. attribute:: copy_into
+      :annotation: :Copy
+
+      
+
+   .. attribute:: export_options
+      :annotation: :Dict[str, Dict]
+
+      
+
+   .. method:: configured_args(self) -> Dict
+      :property:
+
+      Placeholder for configuration arguments of derived classes.
+
+
+

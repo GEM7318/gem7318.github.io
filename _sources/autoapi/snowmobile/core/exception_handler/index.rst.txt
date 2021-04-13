@@ -1,0 +1,110 @@
+:mod:`snowmobile.core.exception_handler`
+========================================
+
+.. py:module:: snowmobile.core.exception_handler
+
+.. autoapi-nested-parse::
+
+   Exception and context management across :xref:`snowmobile` objects.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   snowmobile.core.exception_handler.ExceptionHandler
+
+
+
+.. class:: ExceptionHandler(within: snowmobile.core.errors.Optional[Any] = None, ctx_id: snowmobile.core.errors.Optional[int] = None, in_context: bool = False, children: snowmobile.core.errors.Dict[(int, Any)] = None, is_active_parent: bool = False, to_mirror: snowmobile.core.errors.Optional[List[Any]] = None)
+
+
+   Bases: :class:`snowmobile.core.Generic`
+
+   All :xref:`snowmobile` classes contain a :class:`ExceptionHandler`.
+
+   :param within: Class for which the ExceptionHandler is intended.
+   :type within: Optional[Any]
+   :param ctx_id: Context ID; set/unset by methods when entering/exiting certain
+                  contexts.
+   :type ctx_id: Optional[int]
+   :param in_context: Class is currently within a specific :attr:`ctx_id`
+   :type in_context: bool
+   :param children: Attributes of the :attr:`within` class for which the
+                    :class:`ExceptionHandler` should mirror the methods called on
+                    the parent class.
+                    # TODO: Refactor this out; it's essentially janky multi inheritance
+   :type children: Dict[int, Any]
+   :param is_active_parent: The :attr:`within` class is currently enforcing the context rules
+                            on its :attr:`children`
+   :type is_active_parent: bool
+   :param to_mirror: Methods called in the `attr:`within` class that should be applied
+                     to its :attr:`children` (i.e. set/reset context ID, etc)
+   :type to_mirror: Optional[List[Any]]
+
+   .. method:: current(self)
+      :property:
+
+      All exceptions in the current context.
+
+
+   .. method:: collect(self, e: Any[snowmobile_errors])
+
+      Stores an exception.
+
+
+   .. method:: first(self) -> snowmobile.core.errors.Error
+      :property:
+
+      First exception encountered.
+
+
+   .. method:: last(self) -> snowmobile.core.errors.Error
+      :property:
+
+      Last exception encountered.
+
+
+   .. method:: seen(self, from_ctx: snowmobile.core.errors.Optional[int] = None, of_type: snowmobile.core.errors.Optional[(Any[snowmobile_errors], List[snowmobile_errors])] = None, to_raise: snowmobile.core.errors.Optional[bool] = None, with_ids: snowmobile.core.errors.Optional[(int, List[int], Set[int])] = None, all_time: bool = False) -> bool
+
+      Boolean indicator of if an exception has been seen.
+
+
+   .. method:: get(self, from_ctx: snowmobile.core.errors.Optional[int] = None, of_type: snowmobile.core.errors.Optional[(Any[snowmobile_errors], List[snowmobile_errors])] = None, to_raise: snowmobile.core.errors.Optional[bool] = None, with_ids: snowmobile.core.errors.Optional[(int, List[int], Set[int])] = None, all_time: bool = False, last: bool = False, first: bool = False, _raise: bool = False)
+
+      Boolean indicator of if an exception has been seen.
+
+
+   .. method:: ctx_id(self)
+      :property:
+
+      Current context id.
+
+
+   .. method:: set(self, ctx_id: snowmobile.core.errors.Optional[int] = None, in_context: bool = False, outcome: snowmobile.core.errors.Optional[int] = None)
+
+      **Set** attributes on self.
+
+
+   .. method:: set_from(self, other: snowmobile.core.exception_handler.ExceptionHandler) -> snowmobile.core.exception_handler.ExceptionHandler
+
+      Updates attributes those from another ExceptionHandler instance.
+
+
+   .. method:: reset(self, ctx_id: bool = False, in_context: bool = False, outcome: bool = False) -> snowmobile.core.exception_handler.ExceptionHandler
+
+      **Resets** attributes on self.
+
+
+   .. method:: by_tmstmp(self)
+      :property:
+
+      All exceptions by timestamp, ordered by most to least recent.
+
+
+
